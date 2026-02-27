@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Activities</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Shared Styles */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: #f4f5f8; color: #333; padding-bottom: 80px; }
+        .app-header { background-color: #005eb8; color: white; padding: 1rem; position: sticky; top: 0; z-index: 10; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 1.2rem; }
+        .header-greeting h1 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+        .dashboard-content { padding: 1rem; }
+        .card { background-color: white; border-radius: 8px; overflow: hidden; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        .section-title { font-size: 0.85rem; font-weight: 600; color: #666; margin: 1rem 0 0.5rem 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .transactions-list { list-style: none; padding: 0; margin: 0; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #f0f0f0; background: white; }
+        .transaction-item:last-child { border-bottom: none; }
+        
+        .t-left { display: flex; align-items: center; }
+        .t-icon-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #f2f2f2; display: flex; align-items: center; justify-content: center; margin-right: 1rem; color: #555; font-size: 1.1rem; }
+        .t-info h4 { font-size: 0.95rem; margin: 0 0 4px 0; color: #222; font-weight: 600; }
+        .t-info span { font-size: 0.8rem; color: #888; display: block; }
+        
+        .t-right { text-align: right; }
+        .t-amount { font-weight: 600; font-size: 1rem; display: block; }
+        .t-amount.negative { color: #333; }
+        .t-amount.positive { color: #008a00; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e0e0e0; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #666; font-size: 11px; width: 25%; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-top">
+            <a href="user-dashboard.html" style="color: white; text-decoration: none;"><i class="fas fa-arrow-left"></i></a>
+            <div>
+                <a href="profile.html" style="color: white;"><i class="far fa-user-circle"></i></a>
+            </div>
+        </div>
+        <div class="header-greeting">
+            <h1>Bill Activities</h1>
+            <span>|</span>
+            <p id="acc-label">Checking</p>
+        </div>
+    </header>
+
+    <main class="dashboard-content">
+        
+        <!-- Search -->
+        <div style="margin-bottom: 1rem; display: flex; gap: 10px;">
+            <input type="text" id="search-tx" placeholder="Search transactions" style="flex-grow: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem;">
+        </div>
+
+        <div id="tx-container">
+            <!-- Dynamic Content -->
+            <div style="text-align:center; padding:20px; color:#666;">Loading...</div>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="user-dashboard.html" class="nav-item active"><i class="fas fa-wallet"></i><span>Accounts</span></a>
+        <a href="transfer-page.html" class="nav-item"><i class="fas fa-exchange-alt"></i><span>Pay & transfer</span></a>
+        <a href="#" class="nav-item"><i class="fas fa-clipboard-list"></i><span>Plan & track</span></a>
+        <a href="#" class="nav-item"><i class="fas fa-chart-line"></i><span>Investments</span></a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userId = localStorage.getItem('chase_user_id');
+            if (!userId) { window.location.href = 'login.html'; return; }
+
+            try {
+                const res = await fetch(`/api/my-data?userId=${userId}`);
+                const data = await res.json();
+                
+                const container = document.getElementById('tx-container');
+                container.innerHTML = '';
+
+                if (data.transactions && data.transactions.length > 0) {
+                    // Group Pending vs Posted (Using simple logic)
+                    const pending = data.transactions.filter(t => t.status === 'Pending');
+                    const posted = data.transactions.filter(t => t.status !== 'Pending');
+
+                    if(pending.length > 0) {
+                        container.innerHTML += `<h3 class="section-title">Pending</h3><div class="card"><ul class="transactions-list">${renderList(pending)}</ul></div>`;
+                    }
+
+                    if(posted.length > 0) {
+                        container.innerHTML += `<h3 class="section-title">Posted</h3><div class="card"><ul class="transactions-list">${renderList(posted)}</ul></div>`;
+                    }
+                } else {
+                    container.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">No transactions found.</div>';
+                }
+
+                // Update Header with account info
+                if(data.accounts.length > 0) {
+                    document.getElementById('acc-label').textContent = `${data.accounts[0].accountName} (...${data.accounts[0].accountNumber.slice(-4)})`;
+                }
+
+            } catch (err) { console.error(err); }
+        });
+
+        function renderList(list) {
+            return list.map(t => {
+                const isPos = t.amount > 0;
+                const icon = t.merchant.includes('Net') ? 'fa-video' : t.merchant.includes('Shop') ? 'fa-shopping-bag' : 'fa-credit-card';
+                
+                return `
+                <li class="transaction-item">
+                    <div class="t-left">
+                        <div class="t-icon-circle"><i class="fas ${icon}"></i></div>
+                        <div class="t-info">
+                            <h4>${t.merchant}</h4>
+                            <span>${t.date}</span>
+                        </div>
+                    </div>
+                    <div class="t-right">
+                        <span class="t-amount ${isPos ? 'positive' : 'negative'}">
+                            ${isPos ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}
+                        </span>
+                    </div>
+                </li>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
+

